@@ -7,27 +7,6 @@ using namespace fdm;
 // Initialize the DLLMain
 initDLL
 
-$hook(void, StateGame, init, StateManager& s)
-{
-	// Your code that runs at first frame here (it calls when you load into the world)
-
-	original(self, s);
-}
-
-$hook(void, Player, update, World* world, double dt, EntityPlayer* entityPlayer)
-{
-	// Your code that runs every frame here (it only calls when you play in world, because its Player's function)
-
-	original(self, world, dt, entityPlayer);
-}
-
-$hook(bool, Player, keyInput, GLFWwindow* window, World* world, int key, int scancode, int action, int mods)
-{
-	// Your code that runs when Key Input happens (check GLFW Keyboard Input tutorials)|(it only calls when you play in world, because it is a Player function)
-
-	return original(self, window, world, key, scancode, action, mods);
-}
-
 $hook(void, StateIntro, init, StateManager& s)
 {
 	original(self, s);
@@ -36,4 +15,15 @@ $hook(void, StateIntro, init, StateManager& s)
 	glewExperimental = true;
 	glewInit();
 	glfwInit();
+}
+
+$hook(void, StateGame, addChatMessage, Player* player, const stl::string& message, uint32_t color)
+{
+	if (message == "/kill")
+	{
+		player->health = -1.0f;
+		return;
+	}
+
+	original(self, player, message, color);
 }
